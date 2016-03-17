@@ -23,6 +23,9 @@ class Pokemon {
     private var _nextEvolutionLvl: String!
     private var _pokemonUrl: String!
     
+    private var test: String!
+    
+    
     var nextEvolutionLvl: String {
         get {
             if _nextEvolutionLvl == nil {
@@ -110,8 +113,9 @@ class Pokemon {
     func downloadPokemonDetails(completed: DownloadComplete) {
         
         let url = NSURL(string: _pokemonUrl)!
-        Alamofire.request(.GET, url).responseJSON { (request: NSURLRequest?, response: NSHTTPURLResponse?, result: Result<AnyObject>) -> Void in
-            
+        
+        Alamofire.request(.GET, url).responseJSON { response in
+            let result = response.result
             if let dict = result.value as? Dictionary<String, AnyObject> {
                 
                 if let weight = dict["weight"] as? String {
@@ -161,9 +165,10 @@ class Pokemon {
                     if let url = descArr[0]["resource_uri"] {
                         let nsurl = NSURL(string: "\(URL_BASE)\(url)")!
                         
-                        Alamofire.request(.GET, nsurl).responseJSON { (request: NSURLRequest?, response: NSHTTPURLResponse?, result: Result<AnyObject>) -> Void in
+                        Alamofire.request(.GET, nsurl).responseJSON { response in
                             
-                            if let descDict = result.value as? Dictionary<String, AnyObject> {
+                            let desResult = response.result
+                            if let descDict = desResult.value as? Dictionary<String, AnyObject> {
                                 
                                 if let description = descDict["description"] as? String {
                                     self._description = description
@@ -173,6 +178,19 @@ class Pokemon {
                             
                             completed()
                         }
+                        
+                        
+//                        Alamofire.request(.GET, nsurl).responseJSON{ response in
+//                            let desResult = response.result
+//                            if let descDict = desResult.value as? Dictionary<String, AnyObject> {
+//                                if let description = descDict["description"] as? String {
+//                                    self._description=description
+//                                    print(self.description)
+//                                }
+//                            }
+//                            completed()
+//                        }
+                        
                     }
                     
                 } else {
